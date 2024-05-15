@@ -1,11 +1,17 @@
 export class CustomCollection {
+
+    images: Array<string>;
+    videos: Array<string>;
+
     constructor(
         public id: string,
         public description: string,
-        public directory: string,
+        public directories: string[],
         public collectionPic?: string,
-        public collectionBanner?: string,
-        public pics?: Array<string>,
-        public videos?: Array<string>,
-    ){}
+        public collectionBanner?: string
+    )
+    {
+        this.images = new Array<string>();
+        this.videos = new Array<string>();
+    }
 }

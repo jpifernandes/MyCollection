@@ -10,12 +10,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class CollectionDetailsComponent implements OnInit {
   
-  collection!: CustomCollection | undefined;
+  collection: CustomCollection;
 
   constructor(private collectiosService: CollectionsService,
               private route: ActivatedRoute,
               private router: Router
-  ){}
+  )
+  {
+    this.collection = new CustomCollection("", "", []);
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];

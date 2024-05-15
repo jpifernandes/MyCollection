@@ -1,1 +1,15 @@
-<p>collection-details works!</p>
+<p>{{ collection.description }}</p>
+
+<p>Images</p>
+
+<ul *ngFor="let image of collection?.images">
+    <li>{{ image }}</li>
+</ul>
+
+<p>Videos</p>
+
+<ul *ngFor="let video of collection?.videos">
+    <li>{{ video }}</li>
+</ul>
+
+<br />

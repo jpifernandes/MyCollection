@@ -5,10 +5,12 @@ import { CollectionsListComponent } from './list/collections-list.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CollectionsService } from '../../services/collections.service';
 import { RouterModule } from '@angular/router';
+import { CollectionDetailsComponent } from './collection-details/collection-details.component';
 
 @NgModule({
   declarations: [
-    CollectionsListComponent
+    CollectionsListComponent,
+    CollectionDetailsComponent
   ],
   imports: [
     CommonModule,

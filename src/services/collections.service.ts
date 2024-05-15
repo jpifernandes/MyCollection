@@ -4,15 +4,21 @@ import { SettingsService } from './settings.service';
 import { CustomCollection } from '../models/custom-collection.model';
 import { firstValueFrom } from 'rxjs';
 import { db } from '../db/app.db';
+import { MyCollectionSettings } from '../models/my-collection-settings.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CollectionsService {
 
+  settings: MyCollectionSettings;
+
   constructor(private settingsService: SettingsService,
               private http: HttpClient
-  ) { }
+  )
+  {
+    this.settings = settingsService.getSettings();
+  }
 
   async getCollections(): Promise<CustomCollection[]> {
     
@@ -20,16 +26,14 @@ export class CollectionsService {
 
     if(dbCollections.length > 0) return dbCollections;
 
-    const settings = this.settingsService.getSettings();
-
-    if(settings.virtualDirectoriesRelativePaths == null) return [];
+    if(this.settings.virtualDirectoriesRelativePaths == null) return [];
 
     const htmls = new Array<string>();
 
-    for(let virtualDirRelativePath of settings.virtualDirectoriesRelativePaths) {
+    for(let virtualDirRelativePath of this.settings.virtualDirectoriesRelativePaths) {
 
-      const dirPath = settings.virtualDirectoriesHost + virtualDirRelativePath;
-      const dirHtml = await firstValueFrom(this.http.get(dirPath, { responseType: 'text' }));
+      const dirPath = this.settings.virtualDirectoriesHost + virtualDirRelativePath;
+      const dirHtml = await this.getHtml(dirPath);
       htmls.push(dirHtml);
     }
 
@@ -40,12 +44,35 @@ export class CollectionsService {
     return collections;
   }
 
-  getCollection(id: string): Promise<CustomCollection | undefined> {
-    return db.collections.get({ id: id });
+  async getCollection(id: string): Promise<CustomCollection | undefined> {
+
+    const collection = await this.getCollectionFromDb(id);
+
+    if(!collection) return;
+
+    for(let dir of collection.directories){
+      const links = await this.getMediaLinks(dir);
+      
+      for(let link of links) {
+        if(this.isImage(link)) collection.images.push(link);
+        else if(this.isVideo(link)) collection.videos.push(link);
+      }
+    }
+
+    return collection;
   }
 
-  private getCollectionsFromDb(): Promise<CustomCollection[]> {
-    return db.collections.toArray();
+  private async getCollectionsFromDb(): Promise<CustomCollection[]> {
+    const dbCollections = await db.collections.toArray();
+    return dbCollections.filter(dc => new CustomCollection(dc.id, dc.description, dc.directories));
+  }
+
+  private async getCollectionFromDb(id: string): Promise<CustomCollection | undefined> {
+    const dbCollection = await db.collections.get({ id: id });
+
+    if(!dbCollection) return;
+
+    return new CustomCollection(dbCollection.id, dbCollection.description, dbCollection.directories);
   }
 
   private setCollectionsInDb(collections: CustomCollection[]): Promise<number> {
@@ -55,16 +82,84 @@ export class CollectionsService {
   private extractCollections(htmls: string[]): CustomCollection[] {
 
     const completeHtml = htmls.join();
-    const regex = /<a\s+(?:[^>]*?\s+)?href="([^"\.]*)"[^>]*>(.*?)<\/a>/gi;
     let match;
     const hrefs = new Map<string, CustomCollection>();
+    const linkRegex = this.getLinkRegex();
 
-    while ((match = regex.exec(completeHtml)) !== null) {
-      if(match[1] == '/') continue;
+    while ((match = linkRegex.exec(completeHtml)) !== null) {
 
-      hrefs.set(match[2], new CustomCollection(match[2], match[2], match[1]));
+      const collectionPath = match[1];
+      const collectionId = match[2];
+
+      if(collectionPath == '/') continue;
+
+      if(this.isDirectory(collectionPath)){
+
+        if(hrefs.has(collectionId))
+          hrefs.get(collectionId)?.directories.push(collectionPath);
+        else
+          hrefs.set(collectionId, new CustomCollection(collectionId, collectionId, [ collectionPath ]));
+      }
     }
 
     return [...hrefs.values()];
+  }
+
+  private async getMediaLinks(directory: string): Promise<string[]> {
+    
+    const links = new Array<string>();
+
+    const dirPath = this.settings.virtualDirectoriesHost + directory;
+    const dirHtml = await this.getHtml(dirPath);
+
+    const extractedLinks = this.extractLinks(dirHtml);
+
+    for(let extractedLink of extractedLinks) {
+      if(this.isDirectory(extractedLink)){
+        const subDirLinks = await this.getMediaLinks(extractedLink);
+        links.push(...subDirLinks);
+      } else {
+        links.push(extractedLink);
+      }
+    }
+
+    return links;
+  }
+
+  private extractLinks(html: string): string[] {
+    
+    let match;
+    const links = new Array<string>();
+    const linkRegex = this.getLinkRegex();
+
+    while ((match = linkRegex.exec(html)) !== null) {
+      if(match[2].indexOf('To Parent Directory') >= 0) continue;
+
+      links.push(match[1]);
+    }
+
+    return links;
+  }
+
+  private isDirectory(link: string): boolean {
+    return link.endsWith("/");
+  }
+
+  private isImage(link: string): boolean {
+    const imageExtensionRegex = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i;
+    return imageExtensionRegex.test(link);
+  }
+
+  private isVideo(link: string): boolean {
+    const videoExtensionRegex = /\.(mp4|avi|wmv|mov|flv|mkv|webm|vob|ogv|m4v|3gp|3g2|mpeg|mpg|m2v|m4v|svi|3gpp|3gpp2|mxf|roq|nsv|flv|f4v|f4p|f4a|f4b)$/i;
+    return videoExtensionRegex.test(link);
+  }
+
+  private getLinkRegex(): RegExp {
+    return /<a\s+(?:[^>]*?\s+)?href="([^"]*)"[^>]*>(.*?)<\/a>/gi;
+  }
+
+  private getHtml(url: string): Promise<string> {
+    return firstValueFrom(this.http.get(url, { responseType: 'text' }));
   }
 }
