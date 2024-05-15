@@ -10,6 +10,7 @@ import { CustomCollection } from '../../../models/custom-collection.model';
 export class CollectionsListComponent implements OnInit {
   
   collections!: CustomCollection[];
+  filteredCollections!: CustomCollection[];
 
   constructor(private collectionsService: CollectionsService
   ) {}
@@ -17,7 +18,13 @@ export class CollectionsListComponent implements OnInit {
   ngOnInit(): void {
     this.collectionsService.getCollections().then(c => {
       this.collections = c;
+      this.filteredCollections = c;
     });
   }
 
+  onFilter(event: any) {
+    const input = event.target.value;
+    var regex = new RegExp(input, 'i');
+    this.filteredCollections = this.collections.filter(c => regex.test(c.description));
+  }
 }
