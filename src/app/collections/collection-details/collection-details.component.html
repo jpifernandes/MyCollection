@@ -1,15 +1,37 @@
-<p>{{ collection.description }}</p>
+<div id="collection-banner" class="card text-bg-dark">
+    <img [src]="collection.collectionBanner" class="card-img">
+    <div class="card-img-overlay">
+        <h5 class="card-title">{{ collection.description }}</h5>
+    </div>
+</div>
 
-<p>Images</p>
+<div id="collection-media" class="container-fluid mt-5">
 
-<ul *ngFor="let image of collection?.images">
-    <li>{{ image }}</li>
-</ul>
+    <ul class="nav nav-tabs justify-content-center" id="mediaTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="images-tab" data-bs-toggle="tab" data-bs-target="#images-tab-pane" type="button" role="tab" aria-controls="images-tab-pane" aria-selected="true">Images</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="videos-tab" data-bs-toggle="tab" data-bs-target="#videos-tab-pane" type="button" role="tab" aria-controls="videos-tab-pane" aria-selected="false">Videos</button>
+        </li>
+    </ul>
 
-<p>Videos</p>
+    <div class="tab-content" id="mediaTabContent">
 
-<ul *ngFor="let video of collection?.videos">
-    <li>{{ video }}</li>
-</ul>
+        <div class="tab-pane fade show active p-2" id="images-tab-pane" role="tabpanel" aria-labelledby="images-tab" tabindex="0">
+            <app-collection-images
+                [images]="collection.images"
+                (onSelectCollectionMainImage)="onSelectCollectionMainImage($event)"
+                (onSelectCollectionBanner)="onSelectCollectionBanner($event)"
+            ></app-collection-images>
+        </div>
 
-<br />
+        <div class="tab-pane fade p-2" id="videos-tab-pane" role="tabpanel" aria-labelledby="videos-tab" tabindex="0">
+            <app-collection-videos
+                [videos]="collection.videos"
+            ></app-collection-videos>
+        </div>
+
+    </div>
+
+</div>

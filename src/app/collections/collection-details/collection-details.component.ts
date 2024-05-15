@@ -29,4 +29,14 @@ export class CollectionDetailsComponent implements OnInit {
         else this.router.navigate(['/collections']);
       });
   }
+
+  async onSelectCollectionMainImage(image: string): Promise<void> {
+    this.collection.collectionPic = image;
+    await this.collectiosService.updateCollection(this.collection);
+  }
+
+  async onSelectCollectionBanner(image: string): Promise<void> {
+    this.collection.collectionBanner = image;
+    await this.collectiosService.updateCollection(this.collection);
+  }
 }

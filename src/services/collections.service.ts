@@ -62,9 +62,13 @@ export class CollectionsService {
     return collection;
   }
 
+  async updateCollection(collection: CustomCollection): Promise<number> {
+    return db.collections.where({ id: collection.id }).modify({ ...collection });
+  }
+
   private async getCollectionsFromDb(): Promise<CustomCollection[]> {
     const dbCollections = await db.collections.toArray();
-    return dbCollections.filter(dc => new CustomCollection(dc.id, dc.description, dc.directories));
+    return dbCollections.filter(dc => new CustomCollection(dc.id, dc.description, dc.directories, dc.collectionPic, dc.collectionBanner));
   }
 
   private async getCollectionFromDb(id: string): Promise<CustomCollection | undefined> {
@@ -72,7 +76,9 @@ export class CollectionsService {
 
     if(!dbCollection) return;
 
-    return new CustomCollection(dbCollection.id, dbCollection.description, dbCollection.directories);
+    return new CustomCollection(dbCollection.id, dbCollection.description,
+                                dbCollection.directories, dbCollection.collectionPic,
+                                dbCollection.collectionBanner);
   }
 
   private setCollectionsInDb(collections: CustomCollection[]): Promise<number> {
@@ -119,7 +125,7 @@ export class CollectionsService {
         const subDirLinks = await this.getMediaLinks(extractedLink);
         links.push(...subDirLinks);
       } else {
-        links.push(extractedLink);
+        links.push(this.settings.virtualDirectoriesHost + extractedLink);
       }
     }
 

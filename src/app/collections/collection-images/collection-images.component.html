@@ -1,0 +1,13 @@
+<div class="row row-cols-1 row-cols-md-5 g-4">
+    <div class="col" *ngFor="let imageMetadata of imagesMetadata; let i = index">
+
+        <div class="card">
+            <img (dblclick)="manageImageOptions(i)" [src]="imageMetadata.src" class="card-img-top">
+            <ul class="collection-image-options list-group list-group-flush" [hidden]="!imageMetadata.showOptions">
+                <li class="list-group-item"><a style="cursor: pointer;" (click)="setCollectionMainImage(i)">Set as main image</a></li>
+                <li class="list-group-item" (click)="setCollectionBanner(i)"><a style="cursor: pointer;">Set as banner</a></li>
+            </ul>
+        </div>
+    </div>  
+</div>
+
