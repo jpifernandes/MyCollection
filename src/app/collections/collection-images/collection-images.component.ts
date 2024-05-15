@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ImageMetadata } from '../../../models/image-metadata.mode';
 
+const MAX_IMAGES: number = 20; 
+
 @Component({
   selector: 'app-collection-images',
   templateUrl: './collection-images.component.html',
@@ -8,12 +10,17 @@ import { ImageMetadata } from '../../../models/image-metadata.mode';
 })
 export class CollectionImagesComponent implements OnInit {
   
+  scrollDistance = 1;
+
   imagesMetadata: ImageMetadata[] = [];
+  filteredImagesMetadata: ImageMetadata[] = [];
 
   @Input()
   set images(images: string[]) {
     for(let image of images)
       this.imagesMetadata.push(new ImageMetadata(image, false));
+
+    this.filteredImagesMetadata = this.imagesMetadata.slice(0, MAX_IMAGES);
   }
 
   @Output() onSelectCollectionMainImage = new EventEmitter<any>();
@@ -38,6 +45,13 @@ export class CollectionImagesComponent implements OnInit {
   setCollectionBanner(imageIndex: number): void {
     const image = this.imagesMetadata[imageIndex].src;
     this.onSelectCollectionBanner.emit(image);
+  }
+
+  onScrollDown(event: any) {
+    const startIndex = this.filteredImagesMetadata.length;
+    const endIndex = startIndex + MAX_IMAGES;
+
+    this.filteredImagesMetadata.push(...this.imagesMetadata.slice(startIndex, endIndex));
   }
 
 }

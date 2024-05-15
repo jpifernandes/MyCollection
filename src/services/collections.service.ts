@@ -137,9 +137,12 @@ export class CollectionsService {
     let match;
     const links = new Array<string>();
     const linkRegex = this.getLinkRegex();
+    let count = 0;
 
     while ((match = linkRegex.exec(html)) !== null) {
-      if(match[2].indexOf('To Parent Directory') >= 0) continue;
+      count++;
+
+      if(count == 1) continue;
 
       links.push(match[1]);
     }
