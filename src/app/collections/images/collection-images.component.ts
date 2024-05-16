@@ -36,11 +36,13 @@ export class CollectionImagesComponent implements OnInit {
   setCollectionMainImage(imageIndex: number): void {
     const image = this.allImages[imageIndex].src;
     this.onSelectCollectionMainImage.emit(image);
+    this.allImages[imageIndex].showOptions = false;
   }
 
   setCollectionBanner(imageIndex: number): void {
     const image = this.allImages[imageIndex].src;
     this.onSelectCollectionBanner.emit(image);
+    this.allImages[imageIndex].showOptions = false;
   }
 
 }

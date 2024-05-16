@@ -1,10 +1,31 @@
-<div class="container-fluid mt-2">
-
-    <div class="row mb-2">
-        <div class="col">
-            <input (keyup)="onFilter($event)" class="form-control" type="text" placeholder="Filter">
-        </div>   
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">My Collection</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Options
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Edit settings</a></li>
+              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#importCollectionsModal">Import collections</a></li>
+              <li><a class="dropdown-item" [href]="downloadCollectionsHref" download="collections.json">Export collections</a></li>
+              <li><a class="dropdown-item" href="#">Hard refresh</a></li>
+            </ul>
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input (keyup)="onFilter($event)" class="form-control me-2" type="search" placeholder="Filter">
+        </form>
+      </div>
     </div>
+</nav>
+
+<div class="container-fluid mt-4">
 
     <div class="row row-cols-1 row-cols-md-6 g-4">
         <div *ngFor="let collection of filteredCollections">
@@ -22,3 +43,7 @@
     </div>
 
 </div>
+
+<app-collections-import
+  (onImportCollections)="onImportCollections($event)"
+></app-collections-import>

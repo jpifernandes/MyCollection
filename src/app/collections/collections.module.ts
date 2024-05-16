@@ -5,17 +5,19 @@ import { CollectionsListComponent } from './list/collections-list.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CollectionsService } from '../../services/collections.service';
 import { RouterModule } from '@angular/router';
-import { CollectionDetailsComponent } from './collection-details/collection-details.component';
-import { CollectionImagesComponent } from './collection-images/collection-images.component';
-import { CollectionVideosComponent } from './collection-videos/collection-videos.component';
+import { CollectionDetailsComponent } from './details/collection-details.component';
+import { CollectionImagesComponent } from './images/collection-images.component';
+import { CollectionVideosComponent } from './videos/collection-videos.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { CollectionsImportComponent } from './import/collections-import.component';
 
 @NgModule({
   declarations: [
     CollectionsListComponent,
     CollectionDetailsComponent,
     CollectionImagesComponent,
-    CollectionVideosComponent
+    CollectionVideosComponent,
+    CollectionsImportComponent
   ],
   imports: [
     CommonModule,

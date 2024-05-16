@@ -62,8 +62,16 @@ export class CollectionsService {
     return collection;
   }
 
-  async updateCollection(collection: CustomCollection): Promise<number> {
-    return db.collections.where({ id: collection.id }).modify({ ...collection });
+  async updateCollection(updatedCollection: CustomCollection): Promise<number> {
+    return db.collections.where({ id: updatedCollection.id }).modify((c) => {
+      c.collectionBanner = updatedCollection.collectionBanner;
+      c.collectionPic = updatedCollection.collectionPic;
+    });
+  }
+
+  async replaceCollections(updatedCollections: CustomCollection[]): Promise<number> {
+    await db.collections.clear();
+    return this.setCollectionsInDb(updatedCollections);
   }
 
   private async getCollectionsFromDb(): Promise<CustomCollection[]> {
