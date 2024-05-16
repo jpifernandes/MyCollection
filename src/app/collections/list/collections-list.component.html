@@ -25,8 +25,10 @@
     </div>
 </nav>
 
-<div class="container-fluid mt-4">
-
+<div class="container-fluid mt-4"
+  infinite-scroll
+  (scrolled)="onScrollDown($event)"
+>
     <div class="row row-cols-1 row-cols-md-6 g-4">
         <div *ngFor="let collection of filteredCollections">
             <a style="text-decoration: none;" [routerLink]="['/collections/details', collection.id]">

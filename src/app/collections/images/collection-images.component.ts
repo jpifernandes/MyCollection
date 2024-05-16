@@ -24,13 +24,14 @@ export class CollectionImagesComponent implements OnInit {
 
   ngOnInit(): void { }
 
-  manageImageOptions(imageIndex: number): void {
+  manageImageOptions(imageIndex: number): boolean {
     for(let i=0; i < this.allImages.length; i++){
       if(imageIndex != i)
         this.allImages[i].showOptions = false;
       else
         this.allImages[i].showOptions = !this.allImages[i].showOptions;
     }
+    return false;
   }
 
   setCollectionMainImage(imageIndex: number): void {

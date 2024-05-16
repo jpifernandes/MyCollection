@@ -62,7 +62,7 @@ export class CollectionDetailsComponent implements OnInit {
     this.currentTab = currentTab;
   }
 
-  onScrollDown(eventType: any) {
+  onScrollDown(eventType: any): void {
     if(this.currentTab == 'images'){
       this.loadImages();
     }

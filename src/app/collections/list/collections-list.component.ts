@@ -3,6 +3,8 @@ import { CollectionsService } from '../../../services/collections.service';
 import { CustomCollection } from '../../../models/custom-collection.model';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
+const MAX_COLLECTIONS: number = 24;
+
 @Component({
   selector: 'app-collections-list',
   templateUrl: './collections-list.component.html',
@@ -10,9 +12,10 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 })
 export class CollectionsListComponent implements OnInit {
   
-  collections!: CustomCollection[];
-  filteredCollections!: CustomCollection[];
+  collections: CustomCollection[] = [];
+  filteredCollections: CustomCollection[] = [];
   downloadCollectionsHref!: SafeUrl;
+  filterInput: string = '';
 
   constructor(private collectionsService: CollectionsService,
               private sanitizer: DomSanitizer
@@ -21,9 +24,10 @@ export class CollectionsListComponent implements OnInit {
   ngOnInit(): void {
     
     this.collectionsService.getCollections().then(c => {
-      
       this.collections = c;
-      this.filteredCollections = c;
+
+      for(let collection of this.collections.slice(0, MAX_COLLECTIONS))
+        this.filteredCollections.push(collection);
 
       this.generateCollectionsDownloadHref();
     });
@@ -31,9 +35,8 @@ export class CollectionsListComponent implements OnInit {
   }
 
   onFilter(event: any) {
-    const input = event.target.value;
-    var regex = new RegExp(input, 'i');
-    this.filteredCollections = this.collections.filter(c => regex.test(c.description));
+    this.filterInput = event.target.value;
+    this.filteredCollections = this.filterCollections(this.collections);
   }
 
   async onImportCollections(importedCollections: CustomCollection[]): Promise<void> {
@@ -63,10 +66,29 @@ export class CollectionsListComponent implements OnInit {
       await this.refreshCollections();
   }
 
+  onScrollDown(eventType: any) {
+    const startIndex = this.filteredCollections.length;
+    const endIndex = startIndex + MAX_COLLECTIONS;
+
+    if(startIndex >= this.collections.length) return;
+
+    for(let collection of this.collections.slice(startIndex, endIndex))
+      this.filteredCollections.push(collection);
+
+    this.filteredCollections = this.filterCollections(this.filteredCollections);
+  }
+
   private generateCollectionsDownloadHref(): void{
     const collectionsToExport = { collections: this.collections };
     const json = JSON.stringify(collectionsToExport);
 
     this.downloadCollectionsHref = this.sanitizer.bypassSecurityTrustUrl("data:text/json;charset=UTF-8," + encodeURIComponent(json));
+  }
+
+  private filterCollections(collectionsToFilter: CustomCollection[]): CustomCollection[] {
+    if(!this.filterInput) return collectionsToFilter;
+
+    var regex = new RegExp(this.filterInput, 'i');
+    return collectionsToFilter.filter(c => regex.test(c.description));
   }
 }
