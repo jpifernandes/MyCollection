@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CollectionsService } from '../../../services/collections.service';
 import { CustomCollection } from '../../../models/custom-collection.model';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -50,6 +50,17 @@ export class CollectionsListComponent implements OnInit {
     this.generateCollectionsDownloadHref();
     
     await this.collectionsService.replaceCollections(this.collections);
+  }
+
+  async refreshCollections(): Promise<void> {
+    this.collections = await this.collectionsService.refreshCollections();
+    this.filteredCollections = this.collections;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  async onHardRefreshEvent(event: KeyboardEvent): Promise<void> {
+    if(event.key == 'r' || event.key == 'R')
+      await this.refreshCollections();
   }
 
   private generateCollectionsDownloadHref(): void{

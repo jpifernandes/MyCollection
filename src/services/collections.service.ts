@@ -39,7 +39,7 @@ export class CollectionsService {
 
     const collections = this.extractCollections(htmls);
 
-    await this.setCollectionsInDb(collections);
+    await this.replaceCollections(collections);
 
     return collections;
   }
@@ -71,7 +71,33 @@ export class CollectionsService {
 
   async replaceCollections(updatedCollections: CustomCollection[]): Promise<number> {
     await db.collections.clear();
-    return this.setCollectionsInDb(updatedCollections);
+    return db.collections.bulkAdd(updatedCollections);
+  }
+
+  async refreshCollections(): Promise<CustomCollection[]> {
+    
+    const dbCollections = await this.getCollectionsFromDb();
+
+    const htmls = new Array<string>();
+
+    for(let virtualDirRelativePath of this.settings.virtualDirectoriesRelativePaths) {
+      const dirPath = this.settings.virtualDirectoriesHost + virtualDirRelativePath;
+      const dirHtml = await this.getHtml(dirPath);
+      htmls.push(dirHtml);
+    }
+
+    let collections = this.extractCollections(htmls);
+
+    for(let dbCollection of dbCollections){
+      const collection = collections.find(c => c.id == dbCollection.id);
+
+      if(collection) Object.assign(collection, dbCollection); //Keep state
+      else collections = collections.filter(c => c.id != dbCollection.id); //Remove from state
+    }
+
+    await this.replaceCollections(collections);
+
+    return collections;
   }
 
   private async getCollectionsFromDb(): Promise<CustomCollection[]> {
@@ -87,10 +113,6 @@ export class CollectionsService {
     return new CustomCollection(dbCollection.id, dbCollection.description,
                                 dbCollection.directories, dbCollection.collectionPic,
                                 dbCollection.collectionBanner);
-  }
-
-  private setCollectionsInDb(collections: CustomCollection[]): Promise<number> {
-    return db.collections.bulkAdd(collections);
   }
 
   private extractCollections(htmls: string[]): CustomCollection[] {

@@ -13,7 +13,7 @@ export class AppComponent {
   constructor(private router: Router) {}
 
   @HostListener('window:keydown', ['$event'])
-  onBackToMainPageEvent(event: KeyboardEvent) {
+  onBackToMainPageEvent(event: KeyboardEvent): void {
     if(event.key == ',')
       this.router.navigate(['/collections']);
   }

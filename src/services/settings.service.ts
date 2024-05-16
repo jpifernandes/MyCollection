@@ -14,8 +14,6 @@ export class SettingsService {
       [
         "/Collection1/",
         "/Collection2/"
-      ],
-      "profile",
-      "banner");
+      ]);
   }
 }
