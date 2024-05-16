@@ -10,6 +10,7 @@ import { CollectionImagesComponent } from './images/collection-images.component'
 import { CollectionVideosComponent } from './videos/collection-videos.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CollectionsImportComponent } from './import/collections-import.component';
+import { CollectionsSettingsComponent } from './settings/collections-settings.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { CollectionsImportComponent } from './import/collections-import.componen
     CollectionDetailsComponent,
     CollectionImagesComponent,
     CollectionVideosComponent,
-    CollectionsImportComponent
+    CollectionsImportComponent,
+    CollectionsSettingsComponent
   ],
   imports: [
     CommonModule,

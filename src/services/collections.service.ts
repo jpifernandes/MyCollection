@@ -11,14 +11,10 @@ import { MyCollectionSettings } from '../models/my-collection-settings.model';
 })
 export class CollectionsService {
 
-  settings: MyCollectionSettings;
-
   constructor(private settingsService: SettingsService,
               private http: HttpClient
   )
-  {
-    this.settings = settingsService.getSettings();
-  }
+  { }
 
   async getCollections(): Promise<CustomCollection[]> {
     
@@ -26,13 +22,15 @@ export class CollectionsService {
 
     if(dbCollections.length > 0) return dbCollections;
 
-    if(this.settings.virtualDirectoriesRelativePaths == null) return [];
+    const settings = await this.settingsService.getSettings();
+
+    if(settings.virtualDirectoriesRelativePaths == null) return [];
 
     const htmls = new Array<string>();
 
-    for(let virtualDirRelativePath of this.settings.virtualDirectoriesRelativePaths) {
+    for(let virtualDirRelativePath of settings.virtualDirectoriesRelativePaths) {
 
-      const dirPath = this.settings.virtualDirectoriesHost + virtualDirRelativePath;
+      const dirPath = settings.virtualDirectoriesHost + virtualDirRelativePath;
       const dirHtml = await this.getHtml(dirPath);
       htmls.push(dirHtml);
     }
@@ -80,8 +78,10 @@ export class CollectionsService {
 
     const htmls = new Array<string>();
 
-    for(let virtualDirRelativePath of this.settings.virtualDirectoriesRelativePaths) {
-      const dirPath = this.settings.virtualDirectoriesHost + virtualDirRelativePath;
+    const settings = await this.settingsService.getSettings();
+
+    for(let virtualDirRelativePath of settings.virtualDirectoriesRelativePaths) {
+      const dirPath = settings.virtualDirectoriesHost + virtualDirRelativePath;
       const dirHtml = await this.getHtml(dirPath);
       htmls.push(dirHtml);
     }
@@ -145,7 +145,9 @@ export class CollectionsService {
     
     const links = new Array<string>();
 
-    const dirPath = this.settings.virtualDirectoriesHost + directory;
+    const settings = await this.settingsService.getSettings();
+
+    const dirPath = settings.virtualDirectoriesHost + directory;
     const dirHtml = await this.getHtml(dirPath);
 
     const extractedLinks = this.extractLinks(dirHtml);
@@ -155,7 +157,7 @@ export class CollectionsService {
         const subDirLinks = await this.getMediaLinks(extractedLink);
         links.push(...subDirLinks);
       } else {
-        links.push(this.settings.virtualDirectoriesHost + extractedLink);
+        links.push(settings.virtualDirectoriesHost + extractedLink);
       }
     }
 

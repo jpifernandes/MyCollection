@@ -11,7 +11,7 @@
               Options
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item link-pointer">Edit settings</a></li>
+              <li><a class="dropdown-item link-pointer" data-bs-toggle="modal" data-bs-target="#settingsModal">Edit settings</a></li>
               <li><a class="dropdown-item link-pointer" data-bs-toggle="modal" data-bs-target="#importCollectionsModal">Import collections</a></li>
               <li><a class="dropdown-item link-pointer" [href]="downloadCollectionsHref" download="collections.json">Export collections</a></li>
               <li><a (click)="refreshCollections()" class="dropdown-item link-pointer">Hard refresh</a></li>
@@ -47,3 +47,7 @@
 <app-collections-import
   (onImportCollections)="onImportCollections($event)"
 ></app-collections-import>
+
+<app-collections-settings
+  (onUpdateSettings)="refreshCollections()"
+></app-collections-settings>
