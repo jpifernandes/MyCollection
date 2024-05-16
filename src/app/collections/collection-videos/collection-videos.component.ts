@@ -6,7 +6,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrl: './collection-videos.component.css'
 })
 export class CollectionVideosComponent implements OnInit {
-  
+
   @Input() videos: string[] = [];
 
   ngOnInit(): void { }

@@ -5,14 +5,16 @@
     </div>
 </div>
 
-<div id="collection-media" class="container-fluid mt-5">
-
+<div id="collection-media" class="container-fluid mt-5"
+    infinite-scroll
+    (scrolled)="onScrollDown($event)"
+>
     <ul class="nav nav-tabs justify-content-center" id="mediaTab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="images-tab" data-bs-toggle="tab" data-bs-target="#images-tab-pane" type="button" role="tab" aria-controls="images-tab-pane" aria-selected="true">Images</button>
+          <button (click)="changeTabState('images')" class="nav-link active" id="images-tab" data-bs-toggle="tab" data-bs-target="#images-tab-pane" type="button" role="tab" aria-controls="images-tab-pane" aria-selected="true">Images</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="videos-tab" data-bs-toggle="tab" data-bs-target="#videos-tab-pane" type="button" role="tab" aria-controls="videos-tab-pane" aria-selected="false">Videos</button>
+          <button (click)="changeTabState('videos')" class="nav-link" id="videos-tab" data-bs-toggle="tab" data-bs-target="#videos-tab-pane" type="button" role="tab" aria-controls="videos-tab-pane" aria-selected="false">Videos</button>
         </li>
     </ul>
 
@@ -20,7 +22,7 @@
 
         <div class="tab-pane fade show active p-2" id="images-tab-pane" role="tabpanel" aria-labelledby="images-tab" tabindex="0">
             <app-collection-images
-                [images]="collection.images"
+                [images]="filteredImages"
                 (onSelectCollectionMainImage)="onSelectCollectionMainImage($event)"
                 (onSelectCollectionBanner)="onSelectCollectionBanner($event)"
             ></app-collection-images>
@@ -28,7 +30,7 @@
 
         <div class="tab-pane fade p-2" id="videos-tab-pane" role="tabpanel" aria-labelledby="videos-tab" tabindex="0">
             <app-collection-videos
-                [videos]="collection.videos"
+                [videos]="filteredVideos"
             ></app-collection-videos>
         </div>
 

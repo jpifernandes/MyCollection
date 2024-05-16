@@ -1,9 +1,5 @@
-<div class="row row-cols-1 row-cols-md-5 g-4"
-    infinite-scroll
-    [infiniteScrollDistance]="scrollDistance"
-    (scrolled)="onScrollDown($event)"
->
-    <div class="col" *ngFor="let imageMetadata of filteredImagesMetadata; let i = index">
+<div class="row row-cols-1 row-cols-md-5 g-4">
+    <div class="col" *ngFor="let imageMetadata of allImages; let i = index">
 
         <div class="card">
             <img (dblclick)="manageImageOptions(i)" [src]="imageMetadata.src" class="card-img-top">
