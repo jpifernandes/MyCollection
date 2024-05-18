@@ -1,1 +1,1 @@
-ng build --base-href /MyCollection/
+ng build
