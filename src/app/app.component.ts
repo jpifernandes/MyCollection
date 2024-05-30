@@ -1,5 +1,5 @@
 import { Component, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
+import { Location } from '@angular/common'
 
 @Component({
   selector: 'app-root',
@@ -10,11 +10,12 @@ export class AppComponent {
 
   title = 'MyCollection';
   
-  constructor(private router: Router) {}
+  constructor(private location: Location
+  ) {}
 
   @HostListener('window:keydown', ['$event'])
   onBackToMainPageEvent(event: KeyboardEvent): void {
     if(event.key == ',')
-      this.router.navigate(['/collections']);
+      this.location.back();
   }
 }

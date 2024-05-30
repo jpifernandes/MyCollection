@@ -5,7 +5,8 @@ import { CollectionDetailsComponent } from "./details/collection-details.compone
 export const CollectionsRoutes: Routes = [
     {
         path: 'collections',
-        component: CollectionsListComponent
+        component: CollectionsListComponent,
+        data: { reuse: true }
     },
     {
         path: 'collections/details/:id',
