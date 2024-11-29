@@ -91,8 +91,10 @@ export class CollectionsService {
     for(let dbCollection of dbCollections){
       const collection = collections.find(c => c.id == dbCollection.id);
 
-      if(collection) Object.assign(collection, dbCollection); //Keep state
-      else collections = collections.filter(c => c.id != dbCollection.id); //Remove from state
+      if(collection)
+        collection.SetPicAndBanner(dbCollection.collectionPic, dbCollection.collectionBanner); //Keep state
+      else
+        collections = collections.filter(c => c.id != dbCollection.id); //Remove from state 
     }
 
     await this.replaceCollections(collections);
